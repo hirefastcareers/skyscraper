@@ -6,7 +6,7 @@ export default function HomePage() {
     <Suspense
       fallback={
         <div className="flex min-h-screen items-center justify-center bg-[#05060f] font-mono text-sm text-cyan-400/70">
-          Booting Layer 100…
+          Booting Floor100…
         </div>
       }
     >

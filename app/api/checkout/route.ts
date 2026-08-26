@@ -31,7 +31,7 @@ export async function POST(request: Request) {
             currency: "gbp",
             unit_amount: bid_amount_pence,
             product_data: {
-              name: "Layer 100 — Floor Claim",
+              name: "Floor100 — Floor Claim",
               description: `${display_name} bids ${formatGbpFromPence(bid_amount_pence)} for a tower floor`,
             },
           },

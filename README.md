@@ -1,6 +1,6 @@
-# Layer 100
+# Floor100
 
-Gamified real-time pixel skyscraper. Users bid in GBP via Stripe; the highest bid owns Floor 100 (Penthouse). Lower floors reshuffle automatically.
+Gamified real-time digital skyscraper. Users bid in GBP via Stripe; the highest bid owns Floor 100 (Penthouse). Lower floors reshuffle automatically.
 
 ## Stack
 

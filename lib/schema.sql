@@ -1,4 +1,4 @@
--- Layer 100 — Supabase schema
+-- Floor100 — Supabase schema
 -- Run this in the Supabase SQL Editor
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";

@@ -195,15 +195,15 @@ export function Layer100App() {
           <div className="flex items-center gap-3">
             <div className="border border-amber-400/60 bg-amber-400/10 px-2 py-1 shadow-[0_0_16px_rgba(251,191,36,0.35)]">
               <p className="font-pixel text-[10px] leading-none text-amber-300">
-                L100
+                F100
               </p>
             </div>
             <div>
               <h1 className="font-display text-xl tracking-wide text-white sm:text-2xl">
-                Layer 100
+                Floor100
               </h1>
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-400/80">
-                Real-time pixel skyscraper
+                Real-time digital skyscraper
               </p>
             </div>
           </div>
@@ -231,19 +231,14 @@ export function Layer100App() {
           <section className="min-w-0">
             <div className="mb-6 text-center lg:text-left">
               <p className="font-pixel text-[9px] uppercase tracking-[0.3em] text-cyan-400/70">
-                Compete for the Top Layer
+                Hostile takeovers welcome
               </p>
               <h2 className="mt-2 font-display text-3xl text-white sm:text-4xl">
-                100 floors. One Penthouse.
+                100 Floors. One Crown.
               </h2>
               <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-zinc-400 lg:mx-0">
-                Highest bid owns the highest floor.{" "}
-                <span className="font-semibold text-cyan-400">Outbid anyone</span>{" "}
-                and the tower{" "}
-                <span className="font-semibold text-cyan-400">
-                  reshuffles in real time
-                </span>{" "}
-                — bumping every lower claim down a layer.
+                Highest bid seizes the Penthouse. Outbid anyone and the tower
+                reshuffles in real time – bumping every lower claim down a floor.
               </p>
             </div>
 
@@ -355,7 +350,7 @@ export function Layer100App() {
       </main>
 
       <footer className="relative z-10 border-t border-white/5 py-6 text-center font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-600">
-        Layer 100 · Gamified skyline · GBP via Stripe
+        Floor100 · Gamified skyline · GBP via Stripe
       </footer>
 
       <FloorInspector

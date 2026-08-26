@@ -21,9 +21,9 @@ const shareTechMono = Share_Tech_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Layer 100 — Compete for the Penthouse",
+  title: "Floor100 – Real-Time Digital Skyscraper",
   description:
-    "A gamified real-time pixel skyscraper. Bid in GBP, climb 100 floors, and claim Floor 100.",
+    "The real-time digital skyscraper where money buys height and outbids trigger hostile takeovers.",
 };
 
 export default function RootLayout({

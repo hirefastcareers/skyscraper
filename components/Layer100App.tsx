@@ -191,7 +191,7 @@ export function Layer100App() {
             Vercel → Settings → Environment Variables, then redeploy.
           </div>
         ) : null}
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <div className="border border-amber-400/60 bg-amber-400/10 px-2 py-1 shadow-[0_0_16px_rgba(251,191,36,0.35)]">
               <p className="font-pixel text-[10px] leading-none text-amber-300">
@@ -226,71 +226,36 @@ export function Layer100App() {
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto max-w-7xl px-4 py-8 pb-24 lg:pb-8">
-        <div className="lg:grid lg:grid-cols-12 lg:items-start lg:gap-8">
-          {/* Left — headline + live stats (desktop) */}
-          <aside className="hidden space-y-6 lg:col-span-3 lg:block lg:sticky lg:top-28">
-            <div>
-              <p className="font-pixel text-[9px] uppercase tracking-[0.3em] text-cyan-400/70">
-                Hostile takeovers welcome
-              </p>
-              <h2 className="mt-2 font-display text-3xl leading-tight text-white xl:text-4xl">
-                100 Floors. One Crown.
-              </h2>
-              <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-                Highest bid seizes the Penthouse. Outbid anyone and the tower
-                reshuffles in real time – bumping every lower claim down a floor.
-              </p>
-            </div>
+      <main className="relative z-10 pb-24 pt-6 text-slate-100 lg:pb-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12 lg:gap-8">
+            {/* LEFT COLUMN: Headline & Stats */}
+            <div className="flex flex-col justify-start space-y-6 text-center lg:col-span-3 lg:sticky lg:top-28 lg:text-left">
+              <div>
+                <p className="font-pixel text-[9px] uppercase tracking-[0.3em] text-cyan-400/70">
+                  Hostile takeovers welcome
+                </p>
+                <h2 className="mt-2 font-display text-3xl leading-tight text-white xl:text-4xl">
+                  100 Floors. One Crown.
+                </h2>
+                <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-zinc-400 lg:mx-0">
+                  Highest bid seizes the Penthouse. Outbid anyone and the tower
+                  reshuffles in real time – bumping every lower claim down a
+                  floor.
+                </p>
+              </div>
 
-            <div className="border border-cyan-400/25 bg-black/40 p-4 shadow-[0_0_30px_rgba(34,211,238,0.08)]">
-              <p className="font-pixel text-[9px] uppercase tracking-widest text-cyan-400">
-                Live Stats
-              </p>
-              <dl className="mt-4 space-y-3 font-mono text-sm">
-                <div className="flex justify-between gap-3">
-                  <dt className="text-zinc-500">Claimed Territory</dt>
-                  <dd className="text-right text-white">{occupiedLabel}</dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="text-zinc-500">Penthouse King</dt>
-                  <dd className="truncate text-amber-300">
-                    {penthouse?.display_name ?? "—"}
-                  </dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="text-zinc-500">Penthouse Bounty</dt>
-                  <dd className="text-cyan-300">{topBidLabel}</dd>
-                </div>
-              </dl>
-            </div>
-          </aside>
-
-          {/* Center — tower focal point */}
-          <section className="min-w-0 lg:col-span-6">
-            {/* Mobile: headline (compact) + live stats */}
-            <div className="mb-6 text-center lg:hidden">
-              <p className="font-pixel text-[9px] uppercase tracking-[0.3em] text-cyan-400/70">
-                Hostile takeovers welcome
-              </p>
-              <h2 className="mt-2 font-display text-3xl text-white sm:text-4xl">
-                100 Floors. One Crown.
-              </h2>
-              <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-zinc-400">
-                Highest bid seizes the Penthouse. Outbid anyone and the tower
-                reshuffles in real time – bumping every lower claim down a floor.
-              </p>
-            </div>
-
-            <div className="mb-6 block max-w-lg lg:hidden">
-              <div className="overflow-x-auto border border-cyan-400/25 bg-black/40 px-3 py-3 shadow-[0_0_30px_rgba(34,211,238,0.08)]">
+              {/* Mobile compact horizontal stats */}
+              <div className="mx-auto w-full max-w-lg overflow-x-auto border border-cyan-400/25 bg-black/40 px-3 py-3 shadow-[0_0_30px_rgba(34,211,238,0.08)] lg:hidden">
                 <p className="mb-2 font-pixel text-[9px] uppercase tracking-widest text-cyan-400">
                   Live Stats
                 </p>
                 <dl className="flex min-w-max gap-5 font-mono text-xs">
                   <div className="flex flex-col gap-0.5">
                     <dt className="text-zinc-500">Claimed Territory</dt>
-                    <dd className="whitespace-nowrap text-white">{occupiedLabel}</dd>
+                    <dd className="whitespace-nowrap text-white">
+                      {occupiedLabel}
+                    </dd>
                   </div>
                   <div className="flex flex-col gap-0.5">
                     <dt className="text-zinc-500">Penthouse King</dt>
@@ -304,11 +269,35 @@ export function Layer100App() {
                   </div>
                 </dl>
               </div>
+
+              {/* Desktop stacked stats */}
+              <div className="hidden border border-cyan-400/25 bg-black/40 p-4 shadow-[0_0_30px_rgba(34,211,238,0.08)] lg:block">
+                <p className="font-pixel text-[9px] uppercase tracking-widest text-cyan-400">
+                  Live Stats
+                </p>
+                <dl className="mt-4 space-y-3 font-mono text-sm">
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-zinc-500">Claimed Territory</dt>
+                    <dd className="text-right text-white">{occupiedLabel}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-zinc-500">Penthouse King</dt>
+                    <dd className="truncate text-amber-300">
+                      {penthouse?.display_name ?? "—"}
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-zinc-500">Penthouse Bounty</dt>
+                    <dd className="text-cyan-300">{topBidLabel}</dd>
+                  </div>
+                </dl>
+              </div>
             </div>
 
-            <div className="flex justify-center">
+            {/* CENTER COLUMN: Skyscraper */}
+            <div className="flex w-full flex-col items-center lg:col-span-6">
               {loading ? (
-                <div className="flex h-64 w-full max-w-2xl items-center justify-center border border-dashed border-white/15 bg-black/30 font-mono text-sm text-zinc-500">
+                <div className="mx-auto flex h-64 w-full max-w-xl items-center justify-center border border-dashed border-white/15 bg-black/30 font-mono text-sm text-zinc-500">
                   Syncing tower state…
                 </div>
               ) : (
@@ -319,53 +308,53 @@ export function Layer100App() {
                 />
               )}
             </div>
-          </section>
 
-          {/* Right — protocol + CTA (desktop); protocol only on mobile after CTA */}
-          <aside className="mt-8 space-y-4 lg:col-span-3 lg:mt-0 lg:sticky lg:top-28">
-            <div className="border border-white/10 bg-black/30 p-4">
-              <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-500">
-                System Protocol
-              </p>
-              <ol className="mt-3 list-none space-y-3 text-sm text-zinc-400">
-                <li>
-                  <span className="font-mono text-[11px] uppercase tracking-wider text-cyan-400">
-                    Buy In:
-                  </span>{" "}
-                  Pay to secure your floor (min £5 entry). Drop your link & mark
-                  your territory.
-                </li>
-                <li>
-                  <span className="font-mono text-[11px] uppercase tracking-wider text-cyan-400">
-                    Ascend:
-                  </span>{" "}
-                  Raw capital dictates height. Highest bid seizes Floor 100.
-                </li>
-                <li>
-                  <span className="font-mono text-[11px] uppercase tracking-wider text-cyan-400">
-                    Dethrone:
-                  </span>{" "}
-                  Higher bids trigger dynamic displacement. Get outbid, get pushed
-                  down a level.
-                </li>
-                <li>
-                  <span className="font-mono text-[11px] uppercase tracking-wider text-cyan-400">
-                    Flex:
-                  </span>{" "}
-                  Hold the Top 10 Penthouse Zone to project maximum signal &
-                  dominate traffic.
-                </li>
-              </ol>
+            {/* RIGHT COLUMN: Protocol & CTA */}
+            <div className="flex flex-col justify-start space-y-6 lg:col-span-3 lg:sticky lg:top-28">
+              <div className="border border-white/10 bg-black/30 p-4">
+                <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-500">
+                  System Protocol
+                </p>
+                <ol className="mt-3 list-none space-y-3 text-sm text-zinc-400">
+                  <li>
+                    <span className="font-mono text-[11px] uppercase tracking-wider text-cyan-400">
+                      Buy In:
+                    </span>{" "}
+                    Pay to secure your floor (min £5 entry). Drop your link & mark
+                    your territory.
+                  </li>
+                  <li>
+                    <span className="font-mono text-[11px] uppercase tracking-wider text-cyan-400">
+                      Ascend:
+                    </span>{" "}
+                    Raw capital dictates height. Highest bid seizes Floor 100.
+                  </li>
+                  <li>
+                    <span className="font-mono text-[11px] uppercase tracking-wider text-cyan-400">
+                      Dethrone:
+                    </span>{" "}
+                    Higher bids trigger dynamic displacement. Get outbid, get
+                    pushed down a level.
+                  </li>
+                  <li>
+                    <span className="font-mono text-[11px] uppercase tracking-wider text-cyan-400">
+                      Flex:
+                    </span>{" "}
+                    Hold the Top 10 Penthouse Zone to project maximum signal &
+                    dominate traffic.
+                  </li>
+                </ol>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setClaimOpen(true)}
+                className={`hidden w-full px-4 py-3.5 font-pixel text-[9px] uppercase tracking-widest lg:block ${ctaClassName}`}
+              >
+                Seize a Floor
+              </button>
             </div>
-
-            <button
-              type="button"
-              onClick={() => setClaimOpen(true)}
-              className={`hidden w-full px-4 py-3.5 font-pixel text-[9px] uppercase tracking-widest lg:block ${ctaClassName}`}
-            >
-              Seize a Floor
-            </button>
-          </aside>
+          </div>
         </div>
       </main>
 

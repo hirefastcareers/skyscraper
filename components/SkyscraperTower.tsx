@@ -123,7 +123,7 @@ export function SkyscraperTower({
   );
 
   return (
-    <div className="relative mx-auto w-full max-w-2xl">
+    <div className="relative mx-auto w-full max-w-xl">
       <div className="pointer-events-none absolute -inset-x-8 -top-16 h-40 bg-[radial-gradient(ellipse_at_center,rgba(251,191,36,0.28),transparent_70%)]" />
 
       <div

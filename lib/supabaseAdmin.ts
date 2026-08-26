@@ -6,8 +6,8 @@ let admin: SupabaseClient<Database> | null = null;
 export function getSupabaseAdmin(): SupabaseClient<Database> {
   if (admin) return admin;
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
   if (!supabaseUrl || !serviceRoleKey) {
     throw new Error(
@@ -27,9 +27,8 @@ export function getSupabaseAdmin(): SupabaseClient<Database> {
 
 export const supabaseAdmin = new Proxy({} as SupabaseClient<Database>, {
   get(_target, prop, receiver) {
-    const value = Reflect.get(getSupabaseAdmin(), prop, receiver);
-    return typeof value === "function"
-      ? value.bind(getSupabaseAdmin())
-      : value;
+    const instance = getSupabaseAdmin();
+    const value = Reflect.get(instance, prop, receiver);
+    return typeof value === "function" ? value.bind(instance) : value;
   },
 });

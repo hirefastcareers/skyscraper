@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ClaimFloorModal } from "@/components/ClaimFloorModal";
 import { FloorInspector } from "@/components/FloorInspector";
 import { SkyscraperTower } from "@/components/SkyscraperTower";
-import { supabase } from "@/lib/supabaseClient";
+import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 import {
   formatGbpFromPence,
   TOTAL_FLOORS,
@@ -14,18 +14,23 @@ import {
 } from "@/lib/types";
 
 async function fetchBids(): Promise<Bid[]> {
-  const { data, error } = await supabase
-    .from("bids")
-    .select("*")
-    .not("floor_rank", "is", null)
-    .order("floor_rank", { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from("bids")
+      .select("*")
+      .not("floor_rank", "is", null)
+      .order("floor_rank", { ascending: false });
 
-  if (error) {
-    console.error("[bids] fetch failed", error);
+    if (error) {
+      console.error("[bids] fetch failed", error);
+      return [];
+    }
+
+    return (data ?? []) as Bid[];
+  } catch (error) {
+    console.error("[bids] unexpected fetch error", error);
     return [];
   }
-
-  return (data ?? []) as Bid[];
 }
 
 export function Layer100App() {
@@ -52,6 +57,8 @@ export function Layer100App() {
   }, [reloadBids]);
 
   useEffect(() => {
+    if (!isSupabaseConfigured()) return;
+
     const channel = supabase
       .channel("bids-change")
       .on(
@@ -67,6 +74,8 @@ export function Layer100App() {
       void supabase.removeChannel(channel);
     };
   }, [reloadBids]);
+
+  const supabaseReady = isSupabaseConfigured();
 
   useEffect(() => {
     if (searchParams.get("status") !== "success") return;
@@ -145,6 +154,14 @@ export function Layer100App() {
       />
 
       <header className="sticky top-0 z-40 border-b border-cyan-400/20 bg-[#05060f]/90 backdrop-blur-md">
+        {!supabaseReady ? (
+          <div className="border-b border-amber-400/30 bg-amber-400/10 px-4 py-2 text-center font-mono text-xs text-amber-200">
+            Demo mode: add{" "}
+            <span className="text-white">NEXT_PUBLIC_SUPABASE_URL</span> and{" "}
+            <span className="text-white">NEXT_PUBLIC_SUPABASE_ANON_KEY</span> in
+            Vercel → Settings → Environment Variables, then redeploy.
+          </div>
+        ) : null}
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
           <div className="flex items-center gap-3">
             <div className="border border-amber-400/60 bg-amber-400/10 px-2 py-1 shadow-[0_0_16px_rgba(251,191,36,0.35)]">

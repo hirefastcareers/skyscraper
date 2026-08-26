@@ -1,10 +1,8 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 const nextConfig: NextConfig = {
-  turbopack: {
-    root: path.join(__dirname),
-  },
+  // Keep config minimal for Vercel — avoid turbopack.root / __dirname paths
+  // that break when the project is built outside the local machine.
 };
 
 export default nextConfig;

@@ -126,7 +126,7 @@ export function FloorInspector({
                   rel="noopener noreferrer"
                   className="flex w-full items-center justify-center gap-2 border-2 border-cyan-400 bg-cyan-400 px-4 py-3.5 font-pixel text-[10px] uppercase tracking-widest text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.55)] transition hover:bg-cyan-300 hover:shadow-[0_0_36px_rgba(34,211,238,0.75)]"
                 >
-                  Visit Website ↗
+                  Jack In ↗
                 </a>
               ) : null}
             </>
@@ -144,7 +144,7 @@ export function FloorInspector({
             onClick={onClaim}
             className="w-full border-2 border-amber-400 bg-amber-400/10 px-4 py-3 font-pixel text-[10px] uppercase tracking-widest text-amber-300 transition hover:bg-amber-400/20 hover:shadow-[0_0_24px_rgba(251,191,36,0.45)]"
           >
-            Outbid This Floor
+            Dethrone This Floor
           </button>
         </div>
       </div>

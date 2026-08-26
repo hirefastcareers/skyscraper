@@ -213,7 +213,7 @@ export function Layer100App() {
             onClick={() => setClaimOpen(true)}
             className={`shrink-0 px-4 py-2.5 font-pixel text-[9px] uppercase tracking-widest ${ctaClassName}`}
           >
-            Outbid & Take Penthouse
+            Dethrone Penthouse
           </button>
         </div>
 
@@ -255,7 +255,7 @@ export function Layer100App() {
                 </p>
                 <dl className="flex min-w-max gap-5 font-mono text-xs">
                   <div className="flex flex-col gap-0.5">
-                    <dt className="text-zinc-500">Occupied</dt>
+                    <dt className="text-zinc-500">Claimed Territory</dt>
                     <dd className="whitespace-nowrap text-white">{occupiedLabel}</dd>
                   </div>
                   <div className="flex flex-col gap-0.5">
@@ -265,7 +265,7 @@ export function Layer100App() {
                     </dd>
                   </div>
                   <div className="flex flex-col gap-0.5">
-                    <dt className="text-zinc-500">Top bid</dt>
+                    <dt className="text-zinc-500">Penthouse Bounty</dt>
                     <dd className="text-cyan-300">{topBidLabel}</dd>
                   </div>
                 </dl>
@@ -292,7 +292,7 @@ export function Layer100App() {
               </p>
               <dl className="mt-4 space-y-3 font-mono text-sm">
                 <div className="flex justify-between gap-3">
-                  <dt className="text-zinc-500">Occupied</dt>
+                  <dt className="text-zinc-500">Claimed Territory</dt>
                   <dd className="text-right text-white">{occupiedLabel}</dd>
                 </div>
                 <div className="flex justify-between gap-3">
@@ -302,7 +302,7 @@ export function Layer100App() {
                   </dd>
                 </div>
                 <div className="flex justify-between gap-3">
-                  <dt className="text-zinc-500">Top bid</dt>
+                  <dt className="text-zinc-500">Penthouse Bounty</dt>
                   <dd className="text-cyan-300">{topBidLabel}</dd>
                 </div>
               </dl>
@@ -310,13 +310,36 @@ export function Layer100App() {
 
             <div className="border border-white/10 bg-black/30 p-4">
               <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-500">
-                How it works
+                System Protocol
               </p>
-              <ol className="mt-3 list-decimal space-y-2 pl-4 text-sm text-zinc-400">
-                <li>Pay via Stripe to place a bid (min £5).</li>
-                <li>Rank sorts by bid amount — highest sits on Floor 100.</li>
-                <li>New higher bids bump everyone below down one floor.</li>
-                <li>Top 10 floors glow in the Penthouse Zone.</li>
+              <ol className="mt-3 list-none space-y-3 text-sm text-zinc-400">
+                <li>
+                  <span className="font-mono text-[11px] uppercase tracking-wider text-cyan-400">
+                    Buy In:
+                  </span>{" "}
+                  Pay to secure your floor (min £5 entry). Drop your link & mark
+                  your territory.
+                </li>
+                <li>
+                  <span className="font-mono text-[11px] uppercase tracking-wider text-cyan-400">
+                    Ascend:
+                  </span>{" "}
+                  Raw capital dictates height. Highest bid seizes Floor 100.
+                </li>
+                <li>
+                  <span className="font-mono text-[11px] uppercase tracking-wider text-cyan-400">
+                    Dethrone:
+                  </span>{" "}
+                  Higher bids trigger dynamic displacement. Get outbid, get pushed
+                  down a level.
+                </li>
+                <li>
+                  <span className="font-mono text-[11px] uppercase tracking-wider text-cyan-400">
+                    Flex:
+                  </span>{" "}
+                  Hold the Top 10 Penthouse Zone to project maximum signal &
+                  dominate traffic.
+                </li>
               </ol>
             </div>
 
@@ -325,7 +348,7 @@ export function Layer100App() {
               onClick={() => setClaimOpen(true)}
               className={`w-full px-4 py-3 font-pixel text-[9px] uppercase tracking-widest ${ctaClassName}`}
             >
-              Claim a Floor
+              Seize a Floor
             </button>
           </aside>
         </div>

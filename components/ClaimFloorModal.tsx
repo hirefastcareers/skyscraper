@@ -143,7 +143,7 @@ export function ClaimFloorModal({
                 id="claim-floor-title"
                 className="mt-1 font-display text-2xl text-white"
               >
-                Outbid & Take Penthouse
+                Dethrone Penthouse
               </h2>
               <p className="mt-2 text-sm text-zinc-400">
                 Current Floor 100:{" "}

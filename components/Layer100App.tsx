@@ -132,10 +132,39 @@ export function Layer100App() {
 
   const penthouse = bidsByFloor.get(TOTAL_FLOORS) ?? null;
   const occupiedCount = bidsByFloor.size;
+  const vacantCount = TOTAL_FLOORS - occupiedCount;
 
   const tickerText = penthouse
     ? `Floor 100 currently held by ${penthouse.display_name} for ${formatGbpFromPence(penthouse.bid_amount_pence)}`
     : "Floor 100 is vacant — claim the Penthouse and light up the skyline";
+
+  const ctaClassName =
+    "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold shadow-[0_0_20px_rgba(6,182,212,0.5)] transition hover:from-cyan-400 hover:to-blue-500 hover:shadow-[0_0_28px_rgba(6,182,212,0.7)]";
+
+  function renderTickerSegment(text: string, keyPrefix: string) {
+    const parts = text.split(/([£$][\d,.]+)/g);
+    return (
+      <span key={keyPrefix} className="mx-8">
+        {parts.map((part, index) =>
+          /^[£$][\d,.]+$/.test(part) ? (
+            <span
+              key={`${keyPrefix}-${index}`}
+              className="font-semibold text-amber-400"
+            >
+              {part}
+            </span>
+          ) : (
+            <span key={`${keyPrefix}-${index}`}>{part}</span>
+          )
+        )}
+      </span>
+    );
+  }
+
+  const occupiedLabel = `${occupiedCount} / ${TOTAL_FLOORS} (${vacantCount} Vacant)`;
+  const topBidLabel = penthouse
+    ? formatGbpFromPence(penthouse.bid_amount_pence)
+    : formatGbpFromPence(500);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[#05060f] text-zinc-100">
@@ -182,102 +211,124 @@ export function Layer100App() {
           <button
             type="button"
             onClick={() => setClaimOpen(true)}
-            className="shrink-0 border-2 border-amber-400 bg-amber-400/15 px-4 py-2.5 font-pixel text-[9px] uppercase tracking-widest text-amber-200 transition hover:bg-amber-400/25 hover:shadow-[0_0_24px_rgba(251,191,36,0.45)]"
+            className={`shrink-0 px-4 py-2.5 font-pixel text-[9px] uppercase tracking-widest ${ctaClassName}`}
           >
             Outbid & Take Penthouse
           </button>
         </div>
 
         <div className="overflow-hidden border-t border-white/5 bg-black/50 py-2">
-          <div className="animate-ticker flex whitespace-nowrap font-mono text-xs text-cyan-200/90">
-            <span className="mx-8">{tickerText}</span>
-            <span className="mx-8" aria-hidden>
-              {tickerText}
-            </span>
-            <span className="mx-8" aria-hidden>
-              {tickerText}
-            </span>
+          <div className="animate-marquee flex whitespace-nowrap font-mono text-xs text-slate-200">
+            {renderTickerSegment(tickerText, "a")}
+            <span aria-hidden>{renderTickerSegment(tickerText, "b")}</span>
+            <span aria-hidden>{renderTickerSegment(tickerText, "c")}</span>
           </div>
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto grid max-w-6xl gap-8 px-4 py-8 lg:grid-cols-[1fr_280px] lg:items-start">
-        <section>
-          <div className="mb-6 text-center lg:text-left">
-            <p className="font-pixel text-[9px] uppercase tracking-[0.3em] text-cyan-400/70">
-              Compete for the Top Layer
-            </p>
-            <h2 className="mt-2 font-display text-3xl text-white sm:text-4xl">
-              100 floors. One Penthouse.
-            </h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-zinc-400 lg:mx-0">
-              Highest bid owns the highest floor. Outbid anyone and the tower
-              reshuffles in real time — bumping every lower claim down a layer.
-            </p>
-          </div>
-
-          {loading ? (
-            <div className="flex h-64 items-center justify-center border border-dashed border-white/15 bg-black/30 font-mono text-sm text-zinc-500">
-              Syncing tower state…
+      <main className="relative z-10 mx-auto max-w-6xl px-4 py-8">
+        <div className="grid gap-8 lg:grid-cols-[1fr_280px] lg:items-start">
+          <section className="min-w-0">
+            <div className="mb-6 text-center lg:text-left">
+              <p className="font-pixel text-[9px] uppercase tracking-[0.3em] text-cyan-400/70">
+                Compete for the Top Layer
+              </p>
+              <h2 className="mt-2 font-display text-3xl text-white sm:text-4xl">
+                100 floors. One Penthouse.
+              </h2>
+              <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-zinc-400 lg:mx-0">
+                Highest bid owns the highest floor.{" "}
+                <span className="font-semibold text-cyan-400">Outbid anyone</span>{" "}
+                and the tower{" "}
+                <span className="font-semibold text-cyan-400">
+                  reshuffles in real time
+                </span>{" "}
+                — bumping every lower claim down a layer.
+              </p>
             </div>
-          ) : (
-            <SkyscraperTower
-              bidsByFloor={bidsByFloor}
-              shifting={shifting}
-              onFloorClick={setInspectFloor}
-            />
-          )}
-        </section>
 
-        <aside className="space-y-4 lg:sticky lg:top-28">
-          <div className="border border-cyan-400/25 bg-black/40 p-4 shadow-[0_0_30px_rgba(34,211,238,0.08)]">
-            <p className="font-pixel text-[9px] uppercase tracking-widest text-cyan-400">
-              Live Stats
-            </p>
-            <dl className="mt-4 space-y-3 font-mono text-sm">
-              <div className="flex justify-between gap-3">
-                <dt className="text-zinc-500">Occupied</dt>
-                <dd className="text-white">
-                  {occupiedCount} / {TOTAL_FLOORS}
-                </dd>
+            {/* Mobile: compact horizontal Live Stats */}
+            <div className="mb-6 block max-w-lg lg:hidden">
+              <div className="overflow-x-auto border border-cyan-400/25 bg-black/40 px-3 py-3 shadow-[0_0_30px_rgba(34,211,238,0.08)]">
+                <p className="mb-2 font-pixel text-[9px] uppercase tracking-widest text-cyan-400">
+                  Live Stats
+                </p>
+                <dl className="flex min-w-max gap-5 font-mono text-xs">
+                  <div className="flex flex-col gap-0.5">
+                    <dt className="text-zinc-500">Occupied</dt>
+                    <dd className="whitespace-nowrap text-white">{occupiedLabel}</dd>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <dt className="text-zinc-500">Penthouse</dt>
+                    <dd className="max-w-[8rem] truncate text-amber-300">
+                      {penthouse?.display_name ?? "—"}
+                    </dd>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <dt className="text-zinc-500">Top bid</dt>
+                    <dd className="text-cyan-300">{topBidLabel}</dd>
+                  </div>
+                </dl>
               </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-zinc-500">Penthouse</dt>
-                <dd className="truncate text-amber-300">
-                  {penthouse?.display_name ?? "—"}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-zinc-500">Top bid</dt>
-                <dd className="text-cyan-300">
-                  {penthouse
-                    ? formatGbpFromPence(penthouse.bid_amount_pence)
-                    : formatGbpFromPence(500)}
-                </dd>
-              </div>
-            </dl>
-          </div>
+            </div>
 
-          <div className="border border-white/10 bg-black/30 p-4">
-            <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-500">
-              How it works
-            </p>
-            <ol className="mt-3 list-decimal space-y-2 pl-4 text-sm text-zinc-400">
-              <li>Pay via Stripe to place a bid (min £5).</li>
-              <li>Rank sorts by bid amount — highest sits on Floor 100.</li>
-              <li>New higher bids bump everyone below down one floor.</li>
-              <li>Top 10 floors glow in the Penthouse Zone.</li>
-            </ol>
-          </div>
+            {loading ? (
+              <div className="flex h-64 items-center justify-center border border-dashed border-white/15 bg-black/30 font-mono text-sm text-zinc-500">
+                Syncing tower state…
+              </div>
+            ) : (
+              <SkyscraperTower
+                bidsByFloor={bidsByFloor}
+                shifting={shifting}
+                onFloorClick={setInspectFloor}
+              />
+            )}
+          </section>
 
-          <button
-            type="button"
-            onClick={() => setClaimOpen(true)}
-            className="w-full border border-cyan-400/40 bg-cyan-400/10 px-4 py-3 font-pixel text-[9px] uppercase tracking-widest text-cyan-200 transition hover:bg-cyan-400/20"
-          >
-            Launch Claim Flow
-          </button>
-        </aside>
+          <aside className="space-y-4 lg:sticky lg:top-28">
+            <div className="hidden border border-cyan-400/25 bg-black/40 p-4 shadow-[0_0_30px_rgba(34,211,238,0.08)] lg:block">
+              <p className="font-pixel text-[9px] uppercase tracking-widest text-cyan-400">
+                Live Stats
+              </p>
+              <dl className="mt-4 space-y-3 font-mono text-sm">
+                <div className="flex justify-between gap-3">
+                  <dt className="text-zinc-500">Occupied</dt>
+                  <dd className="text-right text-white">{occupiedLabel}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-zinc-500">Penthouse</dt>
+                  <dd className="truncate text-amber-300">
+                    {penthouse?.display_name ?? "—"}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-zinc-500">Top bid</dt>
+                  <dd className="text-cyan-300">{topBidLabel}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div className="border border-white/10 bg-black/30 p-4">
+              <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-500">
+                How it works
+              </p>
+              <ol className="mt-3 list-decimal space-y-2 pl-4 text-sm text-zinc-400">
+                <li>Pay via Stripe to place a bid (min £5).</li>
+                <li>Rank sorts by bid amount — highest sits on Floor 100.</li>
+                <li>New higher bids bump everyone below down one floor.</li>
+                <li>Top 10 floors glow in the Penthouse Zone.</li>
+              </ol>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setClaimOpen(true)}
+              className={`w-full px-4 py-3 font-pixel text-[9px] uppercase tracking-widest ${ctaClassName}`}
+            >
+              Claim a Floor
+            </button>
+          </aside>
+        </div>
       </main>
 
       <footer className="relative z-10 border-t border-white/5 py-6 text-center font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-600">

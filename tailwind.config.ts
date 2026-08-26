@@ -28,6 +28,7 @@ const config: Config = {
         "neon-glow": "neon-glow 2.2s ease-in-out infinite",
         "pulse-fast": "pulse-fast 0.9s ease-in-out infinite",
         ticker: "ticker 28s linear infinite",
+        marquee: "marquee 28s linear infinite",
         "float-up": "float-up 3.2s ease-in infinite",
         "tower-shift": "tower-shift 0.65s ease-out",
       },
@@ -47,6 +48,10 @@ const config: Config = {
           "50%": { opacity: "0.55", transform: "scale(0.96)" },
         },
         ticker: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-33.333%)" },
+        },
+        marquee: {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-33.333%)" },
         },

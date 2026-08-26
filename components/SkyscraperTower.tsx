@@ -123,8 +123,8 @@ export function SkyscraperTower({
   );
 
   return (
-    <div className="relative mx-auto w-full max-w-xl">
-      <div className="pointer-events-none absolute -inset-x-8 -top-16 h-40 bg-[radial-gradient(ellipse_at_center,rgba(251,191,36,0.18),transparent_70%)]" />
+    <div className="relative mx-auto w-full max-w-2xl">
+      <div className="pointer-events-none absolute -inset-x-8 -top-16 h-40 bg-[radial-gradient(ellipse_at_center,rgba(251,191,36,0.28),transparent_70%)]" />
 
       <div
         className={`relative overflow-hidden rounded-xl border border-cyan-500/30 bg-slate-950/80 p-2 shadow-[0_0_40px_rgba(6,182,212,0.15)] backdrop-blur-md transition duration-500 sm:p-3 ${

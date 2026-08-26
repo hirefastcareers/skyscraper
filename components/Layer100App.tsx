@@ -191,7 +191,7 @@ export function Layer100App() {
             Vercel → Settings → Environment Variables, then redeploy.
           </div>
         ) : null}
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
           <div className="flex items-center gap-3">
             <div className="border border-amber-400/60 bg-amber-400/10 px-2 py-1 shadow-[0_0_16px_rgba(251,191,36,0.35)]">
               <p className="font-pixel text-[10px] leading-none text-amber-300">
@@ -226,23 +226,62 @@ export function Layer100App() {
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto max-w-6xl px-4 py-8">
-        <div className="grid gap-8 lg:grid-cols-[1fr_280px] lg:items-start">
-          <section className="min-w-0">
-            <div className="mb-6 text-center lg:text-left">
+      <main className="relative z-10 mx-auto max-w-7xl px-4 py-8 pb-24 lg:pb-8">
+        <div className="lg:grid lg:grid-cols-12 lg:items-start lg:gap-8">
+          {/* Left — headline + live stats (desktop) */}
+          <aside className="hidden space-y-6 lg:col-span-3 lg:block lg:sticky lg:top-28">
+            <div>
+              <p className="font-pixel text-[9px] uppercase tracking-[0.3em] text-cyan-400/70">
+                Hostile takeovers welcome
+              </p>
+              <h2 className="mt-2 font-display text-3xl leading-tight text-white xl:text-4xl">
+                100 Floors. One Crown.
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+                Highest bid seizes the Penthouse. Outbid anyone and the tower
+                reshuffles in real time – bumping every lower claim down a floor.
+              </p>
+            </div>
+
+            <div className="border border-cyan-400/25 bg-black/40 p-4 shadow-[0_0_30px_rgba(34,211,238,0.08)]">
+              <p className="font-pixel text-[9px] uppercase tracking-widest text-cyan-400">
+                Live Stats
+              </p>
+              <dl className="mt-4 space-y-3 font-mono text-sm">
+                <div className="flex justify-between gap-3">
+                  <dt className="text-zinc-500">Claimed Territory</dt>
+                  <dd className="text-right text-white">{occupiedLabel}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-zinc-500">Penthouse King</dt>
+                  <dd className="truncate text-amber-300">
+                    {penthouse?.display_name ?? "—"}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-zinc-500">Penthouse Bounty</dt>
+                  <dd className="text-cyan-300">{topBidLabel}</dd>
+                </div>
+              </dl>
+            </div>
+          </aside>
+
+          {/* Center — tower focal point */}
+          <section className="min-w-0 lg:col-span-6">
+            {/* Mobile: headline (compact) + live stats */}
+            <div className="mb-6 text-center lg:hidden">
               <p className="font-pixel text-[9px] uppercase tracking-[0.3em] text-cyan-400/70">
                 Hostile takeovers welcome
               </p>
               <h2 className="mt-2 font-display text-3xl text-white sm:text-4xl">
                 100 Floors. One Crown.
               </h2>
-              <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-zinc-400 lg:mx-0">
+              <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-zinc-400">
                 Highest bid seizes the Penthouse. Outbid anyone and the tower
                 reshuffles in real time – bumping every lower claim down a floor.
               </p>
             </div>
 
-            {/* Mobile: compact horizontal Live Stats */}
             <div className="mb-6 block max-w-lg lg:hidden">
               <div className="overflow-x-auto border border-cyan-400/25 bg-black/40 px-3 py-3 shadow-[0_0_30px_rgba(34,211,238,0.08)]">
                 <p className="mb-2 font-pixel text-[9px] uppercase tracking-widest text-cyan-400">
@@ -254,7 +293,7 @@ export function Layer100App() {
                     <dd className="whitespace-nowrap text-white">{occupiedLabel}</dd>
                   </div>
                   <div className="flex flex-col gap-0.5">
-                    <dt className="text-zinc-500">Penthouse</dt>
+                    <dt className="text-zinc-500">Penthouse King</dt>
                     <dd className="max-w-[8rem] truncate text-amber-300">
                       {penthouse?.display_name ?? "—"}
                     </dd>
@@ -267,42 +306,23 @@ export function Layer100App() {
               </div>
             </div>
 
-            {loading ? (
-              <div className="flex h-64 items-center justify-center border border-dashed border-white/15 bg-black/30 font-mono text-sm text-zinc-500">
-                Syncing tower state…
-              </div>
-            ) : (
-              <SkyscraperTower
-                bidsByFloor={bidsByFloor}
-                shifting={shifting}
-                onFloorClick={setInspectFloor}
-              />
-            )}
+            <div className="flex justify-center">
+              {loading ? (
+                <div className="flex h-64 w-full max-w-2xl items-center justify-center border border-dashed border-white/15 bg-black/30 font-mono text-sm text-zinc-500">
+                  Syncing tower state…
+                </div>
+              ) : (
+                <SkyscraperTower
+                  bidsByFloor={bidsByFloor}
+                  shifting={shifting}
+                  onFloorClick={setInspectFloor}
+                />
+              )}
+            </div>
           </section>
 
-          <aside className="space-y-4 lg:sticky lg:top-28">
-            <div className="hidden border border-cyan-400/25 bg-black/40 p-4 shadow-[0_0_30px_rgba(34,211,238,0.08)] lg:block">
-              <p className="font-pixel text-[9px] uppercase tracking-widest text-cyan-400">
-                Live Stats
-              </p>
-              <dl className="mt-4 space-y-3 font-mono text-sm">
-                <div className="flex justify-between gap-3">
-                  <dt className="text-zinc-500">Claimed Territory</dt>
-                  <dd className="text-right text-white">{occupiedLabel}</dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="text-zinc-500">Penthouse</dt>
-                  <dd className="truncate text-amber-300">
-                    {penthouse?.display_name ?? "—"}
-                  </dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="text-zinc-500">Penthouse Bounty</dt>
-                  <dd className="text-cyan-300">{topBidLabel}</dd>
-                </div>
-              </dl>
-            </div>
-
+          {/* Right — protocol + CTA (desktop); protocol only on mobile after CTA */}
+          <aside className="mt-8 space-y-4 lg:col-span-3 lg:mt-0 lg:sticky lg:top-28">
             <div className="border border-white/10 bg-black/30 p-4">
               <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-500">
                 System Protocol
@@ -341,7 +361,7 @@ export function Layer100App() {
             <button
               type="button"
               onClick={() => setClaimOpen(true)}
-              className={`w-full px-4 py-3 font-pixel text-[9px] uppercase tracking-widest ${ctaClassName}`}
+              className={`hidden w-full px-4 py-3.5 font-pixel text-[9px] uppercase tracking-widest lg:block ${ctaClassName}`}
             >
               Seize a Floor
             </button>
@@ -349,7 +369,18 @@ export function Layer100App() {
         </div>
       </main>
 
-      <footer className="relative z-10 border-t border-white/5 py-6 text-center font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-600">
+      {/* Mobile sticky Seize CTA */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-cyan-400/20 bg-[#05060f]/95 p-3 backdrop-blur-md lg:hidden">
+        <button
+          type="button"
+          onClick={() => setClaimOpen(true)}
+          className={`w-full px-4 py-3.5 font-pixel text-[9px] uppercase tracking-widest ${ctaClassName}`}
+        >
+          Seize a Floor
+        </button>
+      </div>
+
+      <footer className="relative z-10 border-t border-white/5 py-6 pb-24 text-center font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-600 lg:pb-6">
         Floor100 · Gamified skyline · GBP via Stripe
       </footer>
 

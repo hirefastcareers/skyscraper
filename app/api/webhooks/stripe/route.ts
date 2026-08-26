@@ -77,6 +77,7 @@ export async function POST(request: Request) {
       tagline,
       custom_color: customColor,
       target_url: targetUrl,
+      clicks: 0,
       bid_amount_pence: bidAmountPence,
       avatar_url: "",
       stripe_session_id: session.id,

@@ -1,7 +1,7 @@
 "use client";
 
 import confetti from "canvas-confetti";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ClaimFloorModal } from "@/components/ClaimFloorModal";
 import { FloorInspector } from "@/components/FloorInspector";
@@ -26,21 +26,36 @@ async function fetchBids(): Promise<Bid[]> {
       return [];
     }
 
-    return (data ?? []) as Bid[];
+    return ((data ?? []) as Bid[]).map((bid) => ({
+      ...bid,
+      clicks: bid.clicks ?? 0,
+      target_url: bid.target_url ?? "",
+    }));
   } catch (error) {
     console.error("[bids] unexpected fetch error", error);
     return [];
   }
 }
 
+function countPresence(state: Record<string, unknown[]>): number {
+  return Object.values(state).reduce((sum, metas) => sum + metas.length, 0);
+}
+
 export function Layer100App() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const presenceKeyRef = useRef(
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `guest-${Math.random().toString(36).slice(2)}`
+  );
   const [bids, setBids] = useState<Bid[]>([]);
   const [loading, setLoading] = useState(true);
   const [shifting, setShifting] = useState(false);
   const [claimOpen, setClaimOpen] = useState(false);
+  const [claimTarget, setClaimTarget] = useState<Bid | null>(null);
   const [inspectFloor, setInspectFloor] = useState<number | null>(null);
+  const [onlineCount, setOnlineCount] = useState(0);
 
   const reloadBids = useCallback(async (animate = false) => {
     if (animate) {
@@ -64,7 +79,46 @@ export function Layer100App() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "bids" },
-        () => {
+        (payload) => {
+          const eventType = payload.eventType;
+
+          if (eventType === "UPDATE") {
+            const next = payload.new as Bid;
+            if (!next?.id) {
+              void reloadBids(false);
+              return;
+            }
+
+            setBids((current) => {
+              const existing = current.find((bid) => bid.id === next.id);
+              if (!existing) {
+                queueMicrotask(() => {
+                  void reloadBids(false);
+                });
+                return current;
+              }
+
+              const rankingChanged =
+                existing.bid_amount_pence !== next.bid_amount_pence ||
+                existing.floor_rank !== next.floor_rank ||
+                existing.display_name !== next.display_name;
+
+              if (rankingChanged) {
+                queueMicrotask(() => {
+                  void reloadBids(false);
+                });
+                return current;
+              }
+
+              return current.map((bid) =>
+                bid.id === next.id
+                  ? { ...bid, clicks: next.clicks ?? bid.clicks }
+                  : bid
+              );
+            });
+            return;
+          }
+
           void reloadBids(true);
         }
       )
@@ -75,7 +129,44 @@ export function Layer100App() {
     };
   }, [reloadBids]);
 
+  useEffect(() => {
+    if (!isSupabaseConfigured()) return;
+
+    const channel = supabase.channel("floor100-online", {
+      config: {
+        presence: {
+          key: presenceKeyRef.current,
+        },
+      },
+    });
+
+    const syncOnline = () => {
+      setOnlineCount(countPresence(channel.presenceState()));
+    };
+
+    channel
+      .on("presence", { event: "sync" }, syncOnline)
+      .on("presence", { event: "join" }, syncOnline)
+      .on("presence", { event: "leave" }, syncOnline)
+      .subscribe(async (status) => {
+        if (status !== "SUBSCRIBED") return;
+        await channel.track({
+          online_at: new Date().toISOString(),
+        });
+        syncOnline();
+      });
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, []);
+
   const supabaseReady = isSupabaseConfigured();
+
+  const openClaim = useCallback((target: Bid | null = null) => {
+    setClaimTarget(target);
+    setClaimOpen(true);
+  }, []);
 
   useEffect(() => {
     if (searchParams.get("status") !== "success") return;
@@ -130,6 +221,9 @@ export function Layer100App() {
     return map;
   }, [bids]);
 
+  const inspectedBid =
+    inspectFloor != null ? bidsByFloor.get(inspectFloor) ?? null : null;
+
   const penthouse = bidsByFloor.get(TOTAL_FLOORS) ?? null;
   const occupiedCount = bidsByFloor.size;
   const vacantCount = TOTAL_FLOORS - occupiedCount;
@@ -165,6 +259,14 @@ export function Layer100App() {
   const topBidLabel = penthouse
     ? formatGbpFromPence(penthouse.bid_amount_pence)
     : formatGbpFromPence(500);
+  const onlineLabel = `${onlineCount}`;
+
+  const handleClicksUpdated = useCallback((bidId: string, clicks: number) => {
+    setBids((current) =>
+      current.map((bid) => (bid.id === bidId ? { ...bid, clicks } : bid))
+    );
+  }, []);
+
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[#05060f] text-zinc-100">
@@ -210,7 +312,7 @@ export function Layer100App() {
 
           <button
             type="button"
-            onClick={() => setClaimOpen(true)}
+            onClick={() => openClaim(null)}
             className={`shrink-0 px-4 py-2.5 font-pixel text-[9px] uppercase tracking-widest ${ctaClassName}`}
           >
             Dethrone Penthouse
@@ -252,6 +354,12 @@ export function Layer100App() {
                 </p>
                 <dl className="flex min-w-max gap-5 font-mono text-xs">
                   <div className="flex flex-col gap-0.5">
+                    <dt className="text-zinc-500">Online Now</dt>
+                    <dd className="whitespace-nowrap text-emerald-400">
+                      🟢 {onlineLabel}
+                    </dd>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
                     <dt className="text-zinc-500">Claimed Territory</dt>
                     <dd className="whitespace-nowrap text-white">
                       {occupiedLabel}
@@ -276,6 +384,12 @@ export function Layer100App() {
                   Live Stats
                 </p>
                 <dl className="mt-4 space-y-3 font-mono text-sm">
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-zinc-500">Online Now</dt>
+                    <dd className="text-right text-emerald-400">
+                      🟢 {onlineLabel}
+                    </dd>
+                  </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-zinc-500">Claimed Territory</dt>
                     <dd className="text-right text-white">{occupiedLabel}</dd>
@@ -348,7 +462,7 @@ export function Layer100App() {
 
               <button
                 type="button"
-                onClick={() => setClaimOpen(true)}
+                onClick={() => openClaim(null)}
                 className={`hidden w-full px-4 py-3.5 font-pixel text-[9px] uppercase tracking-widest lg:block ${ctaClassName}`}
               >
                 Seize a Floor
@@ -362,7 +476,7 @@ export function Layer100App() {
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-cyan-400/20 bg-[#05060f]/95 p-3 backdrop-blur-md lg:hidden">
         <button
           type="button"
-          onClick={() => setClaimOpen(true)}
+          onClick={() => openClaim(null)}
           className={`w-full px-4 py-3.5 font-pixel text-[9px] uppercase tracking-widest ${ctaClassName}`}
         >
           Seize a Floor
@@ -375,19 +489,24 @@ export function Layer100App() {
 
       <FloorInspector
         floor={inspectFloor ?? 0}
-        bid={inspectFloor != null ? bidsByFloor.get(inspectFloor) ?? null : null}
+        bid={inspectedBid}
         open={inspectFloor !== null}
         onClose={() => setInspectFloor(null)}
         onClaim={() => {
           setInspectFloor(null);
-          setClaimOpen(true);
+          openClaim(inspectedBid);
         }}
+        onClicksUpdated={handleClicksUpdated}
       />
 
       <ClaimFloorModal
         open={claimOpen}
-        onClose={() => setClaimOpen(false)}
+        onClose={() => {
+          setClaimOpen(false);
+          setClaimTarget(null);
+        }}
         penthouseBid={penthouse}
+        targetBid={claimTarget}
       />
     </div>
   );

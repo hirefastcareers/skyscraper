@@ -6,6 +6,7 @@ export type Bid = {
   avatar_url: string;
   custom_color: string;
   target_url: string;
+  clicks: number;
   bid_amount_pence: number;
   floor_rank: number | null;
   stripe_session_id: string | null;
@@ -19,6 +20,7 @@ export type BidInsert = {
   avatar_url?: string;
   custom_color?: string;
   target_url?: string;
+  clicks?: number;
   bid_amount_pence: number;
   stripe_session_id?: string | null;
 };
@@ -31,12 +33,18 @@ export type Database = {
         Insert: BidInsert;
         Update: Partial<BidInsert> & {
           floor_rank?: number | null;
+          clicks?: number;
         };
         Relationships: [];
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      increment_bid_clicks: {
+        Args: { p_bid_id: string };
+        Returns: number;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

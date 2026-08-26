@@ -57,6 +57,7 @@ Paste the printed `whsec_...` into `.env.local` as `STRIPE_WEBHOOK_SECRET`.
 | --- | --- | --- |
 | `/api/checkout` | POST | Create Stripe Checkout session (GBP) |
 | `/api/webhooks/stripe` | POST | Fulfill `checkout.session.completed` → insert bid |
+| `/api/click` | POST | Increment verified click count for a bid (`{ "bid_id": "..." }`) |
 
 Checkout body:
 

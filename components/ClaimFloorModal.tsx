@@ -12,15 +12,22 @@ type ClaimFloorModalProps = {
   open: boolean;
   onClose: () => void;
   penthouseBid: Bid | null;
+  /** Floor being challenged — presets are relative to this bid's price */
+  targetBid?: Bid | null;
 };
 
 const DEFAULT_COLOR = "#00ffff";
+const OUTBID_PRESETS_POUNDS = [5, 10, 25, 50] as const;
 
 export function ClaimFloorModal({
   open,
   onClose,
   penthouseBid,
+  targetBid = null,
 }: ClaimFloorModalProps) {
+  const referenceBid = targetBid ?? penthouseBid;
+  const currentFloorPrice = referenceBid?.bid_amount_pence ?? 0;
+
   const minBid = useMemo(() => {
     if (!penthouseBid) return MIN_BID_PENCE;
     return Math.max(MIN_BID_PENCE, penthouseBid.bid_amount_pence + 100);
@@ -62,6 +69,12 @@ export function ClaimFloorModal({
     const pounds = Number.parseFloat(raw);
     if (!Number.isFinite(pounds)) return;
     setBidAmountPence(Math.round(pounds * 100));
+  };
+
+  const applyPreset = (pounds: number) => {
+    const next = Math.max(minBid, currentFloorPrice + pounds * 100);
+    setBidAmountPence(next);
+    setBidPoundsInput((next / 100).toFixed(2));
   };
 
   const handleSubmit = async (event: FormEvent) => {
@@ -146,10 +159,12 @@ export function ClaimFloorModal({
                 Dethrone Penthouse
               </h2>
               <p className="mt-2 text-sm text-zinc-400">
-                Current Floor 100:{" "}
+                {targetBid && targetBid.floor_rank != null
+                  ? `Target Floor ${targetBid.floor_rank}: `
+                  : "Current Floor 100: "}
                 <span className="text-cyan-300">
-                  {penthouseBid
-                    ? `${penthouseBid.display_name} · ${formatGbpFromPence(penthouseBid.bid_amount_pence)}`
+                  {referenceBid
+                    ? `${referenceBid.display_name} · ${formatGbpFromPence(referenceBid.bid_amount_pence)}`
                     : "Vacant"}
                 </span>
               </p>
@@ -261,6 +276,35 @@ export function ClaimFloorModal({
               <p className="pb-2 font-mono text-xs text-zinc-500">
                 min {formatGbpFromPence(minBid)}
               </p>
+            </div>
+
+            <div>
+              <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-zinc-500">
+                Instant outbid
+              </p>
+              <div className="grid grid-cols-4 gap-2">
+                {OUTBID_PRESETS_POUNDS.map((pounds) => {
+                  const next = Math.max(
+                    minBid,
+                    currentFloorPrice + pounds * 100
+                  );
+                  const active = bidAmountPence === next;
+                  return (
+                    <button
+                      key={pounds}
+                      type="button"
+                      onClick={() => applyPreset(pounds)}
+                      className={`border px-2 py-2 font-pixel text-[8px] uppercase tracking-wider transition ${
+                        active
+                          ? "border-amber-400 bg-amber-400/20 text-amber-200 shadow-[0_0_12px_rgba(251,191,36,0.35)]"
+                          : "border-white/15 bg-black/40 text-zinc-300 hover:border-cyan-400/60 hover:text-cyan-200"
+                      }`}
+                    >
+                      +£{pounds}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <input

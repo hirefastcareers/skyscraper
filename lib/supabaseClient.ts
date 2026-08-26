@@ -98,6 +98,7 @@ function createOfflineQueryBuilder() {
   builder.not = passthrough;
   builder.order = passthrough;
   builder.limit = passthrough;
+  builder.rpc = () => result;
   builder.maybeSingle = () => result;
   builder.single = () => result;
   builder.then = result.then.bind(result);
@@ -107,8 +108,13 @@ function createOfflineQueryBuilder() {
 function createOfflineChannel() {
   const channel = {
     on: () => channel,
-    subscribe: () => channel,
+    subscribe: (cb?: (status: string) => void) => {
+      if (typeof cb === "function") cb("SUBSCRIBED");
+      return channel;
+    },
     unsubscribe: async () => "ok" as const,
+    track: async () => "ok" as const,
+    presenceState: () => ({} as Record<string, unknown[]>),
   };
   return channel;
 }

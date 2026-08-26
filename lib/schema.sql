@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS public.bids (
   avatar_url text NOT NULL DEFAULT '',
   custom_color text NOT NULL DEFAULT '#00ffff',
   target_url text NOT NULL DEFAULT '',
+  clicks integer NOT NULL DEFAULT 0
+    CHECK (clicks >= 0),
   bid_amount_pence integer NOT NULL DEFAULT 500
     CHECK (bid_amount_pence >= 500),
   floor_rank integer,
@@ -18,9 +20,12 @@ CREATE TABLE IF NOT EXISTS public.bids (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
--- Existing deployments: add target_url if the table already exists
+-- Existing deployments: add target_url / clicks if the table already exists
 ALTER TABLE public.bids
   ADD COLUMN IF NOT EXISTS target_url text NOT NULL DEFAULT '';
+
+ALTER TABLE public.bids
+  ADD COLUMN IF NOT EXISTS clicks integer NOT NULL DEFAULT 0;
 
 CREATE INDEX IF NOT EXISTS bids_floor_rank_idx
   ON public.bids (floor_rank DESC NULLS LAST);
@@ -81,6 +86,40 @@ CREATE POLICY "Service role inserts bids"
   FOR INSERT
   TO service_role
   WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Service role updates bids" ON public.bids;
+CREATE POLICY "Service role updates bids"
+  ON public.bids
+  FOR UPDATE
+  TO service_role
+  USING (true)
+  WITH CHECK (true);
+
+-- Atomic click counter (service role / API)
+CREATE OR REPLACE FUNCTION public.increment_bid_clicks(p_bid_id uuid)
+RETURNS integer
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  new_clicks integer;
+BEGIN
+  UPDATE public.bids
+  SET clicks = clicks + 1
+  WHERE id = p_bid_id
+  RETURNING clicks INTO new_clicks;
+
+  IF new_clicks IS NULL THEN
+    RAISE EXCEPTION 'bid not found';
+  END IF;
+
+  RETURN new_clicks;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.increment_bid_clicks(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.increment_bid_clicks(uuid) TO service_role;
 
 -- Enable Realtime for live floor shifts (idempotent)
 DO $$

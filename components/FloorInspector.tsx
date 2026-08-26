@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import type { Bid } from "@/lib/types";
 import { formatGbpFromPence, urlDisplayDomain } from "@/lib/types";
 
@@ -9,6 +10,7 @@ type FloorInspectorProps = {
   open: boolean;
   onClose: () => void;
   onClaim: () => void;
+  onClicksUpdated?: (bidId: string, clicks: number) => void;
 };
 
 export function FloorInspector({
@@ -17,13 +19,48 @@ export function FloorInspector({
   open,
   onClose,
   onClaim,
+  onClicksUpdated,
 }: FloorInspectorProps) {
+  const [localClicks, setLocalClicks] = useState(bid?.clicks ?? 0);
+  const [recording, setRecording] = useState(false);
+
+  useEffect(() => {
+    setLocalClicks(bid?.clicks ?? 0);
+  }, [bid?.id, bid?.clicks]);
+
   if (!open) return null;
 
   const isPenthouse = floor === 100;
   const isTopTen = floor >= 91;
   const domain = bid?.target_url ? urlDisplayDomain(bid.target_url) : null;
   const hasVisitLink = Boolean(bid?.target_url && domain);
+
+  const handleJackIn = async () => {
+    if (!bid?.target_url) return;
+
+    window.open(bid.target_url, "_blank", "noopener,noreferrer");
+
+    if (recording) return;
+    setRecording(true);
+    setLocalClicks((c) => c + 1);
+
+    try {
+      const response = await fetch("/api/click", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bid_id: bid.id }),
+      });
+      const data = (await response.json()) as { clicks?: number };
+      if (response.ok && typeof data.clicks === "number") {
+        setLocalClicks(data.clicks);
+        onClicksUpdated?.(bid.id, data.clicks);
+      }
+    } catch (error) {
+      console.error("[click] failed", error);
+    } finally {
+      setRecording(false);
+    }
+  };
 
   return (
     <div
@@ -119,15 +156,18 @@ export function FloorInspector({
                 </div>
               </dl>
 
+              <p className="border border-amber-400/20 bg-amber-400/5 px-3 py-2 font-mono text-sm text-amber-200">
+                🔥 {localClicks.toLocaleString("en-GB")} Verified Clicks
+              </p>
+
               {hasVisitLink ? (
-                <a
-                  href={bid.target_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
+                  onClick={() => void handleJackIn()}
                   className="flex w-full items-center justify-center gap-2 border-2 border-cyan-400 bg-cyan-400 px-4 py-3.5 font-pixel text-[10px] uppercase tracking-widest text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.55)] transition hover:bg-cyan-300 hover:shadow-[0_0_36px_rgba(34,211,238,0.75)]"
                 >
                   Jack In ↗
-                </a>
+                </button>
               ) : null}
             </>
           ) : (

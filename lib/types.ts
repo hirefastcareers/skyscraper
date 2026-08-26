@@ -5,6 +5,7 @@ export type Bid = {
   tagline: string;
   avatar_url: string;
   custom_color: string;
+  target_url: string;
   bid_amount_pence: number;
   floor_rank: number | null;
   stripe_session_id: string | null;
@@ -17,6 +18,7 @@ export type BidInsert = {
   tagline?: string;
   avatar_url?: string;
   custom_color?: string;
+  target_url?: string;
   bid_amount_pence: number;
   stripe_session_id?: string | null;
 };
@@ -49,4 +51,14 @@ export function formatGbpFromPence(pence: number): string {
     style: "currency",
     currency: "GBP",
   }).format(pence / 100);
+}
+
+/** Hostname for tooltip/display, e.g. `https://www.chambers.dev/x` → `chambers.dev` */
+export function urlDisplayDomain(rawUrl: string): string | null {
+  try {
+    const host = new URL(rawUrl).hostname.replace(/^www\./i, "");
+    return host || null;
+  } catch {
+    return null;
+  }
 }

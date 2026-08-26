@@ -65,6 +65,7 @@ Checkout body:
   "display_name": "NEON_ACE",
   "tagline": "King of the skyline",
   "custom_color": "#00ffff",
+  "target_url": "https://chambers.dev",
   "bid_amount_pence": 1500
 }
 ```

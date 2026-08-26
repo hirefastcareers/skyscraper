@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: validated.error }, { status: 400 });
     }
 
-    const { display_name, tagline, custom_color, bid_amount_pence } =
+    const { display_name, tagline, custom_color, target_url, bid_amount_pence } =
       validated.data;
 
     const appUrl =
@@ -41,6 +41,7 @@ export async function POST(request: Request) {
         display_name,
         tagline,
         custom_color,
+        target_url,
         bid_amount_pence: String(bid_amount_pence),
       },
       success_url: `${appUrl}/?status=success`,

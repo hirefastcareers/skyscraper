@@ -1,7 +1,7 @@
 "use client";
 
 import type { Bid } from "@/lib/types";
-import { formatGbpFromPence } from "@/lib/types";
+import { formatGbpFromPence, urlDisplayDomain } from "@/lib/types";
 
 type FloorInspectorProps = {
   floor: number;
@@ -22,6 +22,8 @@ export function FloorInspector({
 
   const isPenthouse = floor === 100;
   const isTopTen = floor >= 91;
+  const domain = bid?.target_url ? urlDisplayDomain(bid.target_url) : null;
+  const hasVisitLink = Boolean(bid?.target_url && domain);
 
   return (
     <div
@@ -90,10 +92,23 @@ export function FloorInspector({
                   <p className="truncate text-sm text-zinc-400">
                     {bid.tagline || "No tagline"}
                   </p>
+                  {domain ? (
+                    <p className="mt-0.5 truncate font-mono text-[11px] text-cyan-400/80">
+                      {domain}
+                    </p>
+                  ) : null}
                 </div>
               </div>
 
               <dl className="grid grid-cols-2 gap-3 font-mono text-sm">
+                <div className="border border-white/10 bg-black/40 p-3">
+                  <dt className="text-[10px] uppercase tracking-wider text-zinc-500">
+                    Floor Rank
+                  </dt>
+                  <dd className="mt-1 text-amber-300">
+                    {bid.floor_rank ?? floor}
+                  </dd>
+                </div>
                 <div className="border border-white/10 bg-black/40 p-3">
                   <dt className="text-[10px] uppercase tracking-wider text-zinc-500">
                     Bid
@@ -102,18 +117,18 @@ export function FloorInspector({
                     {formatGbpFromPence(bid.bid_amount_pence)}
                   </dd>
                 </div>
-                <div className="border border-white/10 bg-black/40 p-3">
-                  <dt className="text-[10px] uppercase tracking-wider text-zinc-500">
-                    Claimed
-                  </dt>
-                  <dd className="mt-1 text-zinc-200">
-                    {new Date(bid.created_at).toLocaleString("en-GB", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    })}
-                  </dd>
-                </div>
               </dl>
+
+              {hasVisitLink ? (
+                <a
+                  href={bid.target_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center gap-2 border-2 border-cyan-400 bg-cyan-400 px-4 py-3.5 font-pixel text-[10px] uppercase tracking-widest text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.55)] transition hover:bg-cyan-300 hover:shadow-[0_0_36px_rgba(34,211,238,0.75)]"
+                >
+                  Visit Website ↗
+                </a>
+              ) : null}
             </>
           ) : (
             <div className="border border-dashed border-white/20 bg-black/30 p-4 text-center">
@@ -129,7 +144,7 @@ export function FloorInspector({
             onClick={onClaim}
             className="w-full border-2 border-amber-400 bg-amber-400/10 px-4 py-3 font-pixel text-[10px] uppercase tracking-widest text-amber-300 transition hover:bg-amber-400/20 hover:shadow-[0_0_24px_rgba(251,191,36,0.45)]"
           >
-            Outbid & Take Penthouse
+            Outbid This Floor
           </button>
         </div>
       </div>

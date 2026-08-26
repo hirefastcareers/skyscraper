@@ -10,12 +10,17 @@ CREATE TABLE IF NOT EXISTS public.bids (
   tagline text NOT NULL DEFAULT '',
   avatar_url text NOT NULL DEFAULT '',
   custom_color text NOT NULL DEFAULT '#00ffff',
+  target_url text NOT NULL DEFAULT '',
   bid_amount_pence integer NOT NULL DEFAULT 500
     CHECK (bid_amount_pence >= 500),
   floor_rank integer,
   stripe_session_id text UNIQUE,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+
+-- Existing deployments: add target_url if the table already exists
+ALTER TABLE public.bids
+  ADD COLUMN IF NOT EXISTS target_url text NOT NULL DEFAULT '';
 
 CREATE INDEX IF NOT EXISTS bids_floor_rank_idx
   ON public.bids (floor_rank DESC NULLS LAST);

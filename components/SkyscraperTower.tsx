@@ -6,6 +6,7 @@ import {
   formatGbpFromPence,
   PENTHOUSE_ZONE_MIN,
   TOTAL_FLOORS,
+  urlDisplayDomain,
   type Bid,
 } from "@/lib/types";
 
@@ -148,13 +149,24 @@ export function SkyscraperTower({
               const isTopTen = floor >= PENTHOUSE_ZONE_MIN;
               const isPenthouse = floor === TOTAL_FLOORS;
               const neon = bid?.custom_color ?? "#22d3ee";
+              const domain =
+                bid?.target_url ? urlDisplayDomain(bid.target_url) : null;
 
               return (
                 <li key={floor}>
                   <button
                     type="button"
                     onClick={() => onFloorClick(floor)}
+                    title={
+                      occupied && bid
+                        ? domain
+                          ? `${bid.display_name} · ${domain}`
+                          : bid.display_name
+                        : undefined
+                    }
                     className={`group relative flex w-full items-stretch gap-2 px-2 py-1.5 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-cyan-400 ${
+                      occupied ? "cursor-pointer" : ""
+                    } ${
                       isPenthouse
                         ? "z-10 border-2 border-amber-400 bg-[#14120a] shadow-[0_0_25px_rgba(251,191,36,0.4)] hover:bg-[#1a170c]"
                         : occupied
@@ -183,6 +195,24 @@ export function SkyscraperTower({
                     ) : null}
 
                     {isPenthouse ? <PenthouseParticles /> : null}
+
+                    {occupied && bid ? (
+                      <span
+                        className="pointer-events-none absolute inset-y-0 right-2 z-30 flex max-w-[55%] items-center opacity-0 transition duration-150 group-hover:opacity-100"
+                        role="tooltip"
+                      >
+                        <span className="truncate rounded border border-cyan-400/40 bg-[#0a0e1a]/95 px-2 py-1 shadow-[0_0_16px_rgba(34,211,238,0.25)]">
+                          <span className="block truncate font-display text-xs text-amber-300">
+                            {bid.display_name}
+                          </span>
+                          {domain ? (
+                            <span className="mt-0.5 block truncate font-mono text-[10px] text-cyan-400/90">
+                              {domain}
+                            </span>
+                          ) : null}
+                        </span>
+                      </span>
+                    ) : null}
 
                     <div className="relative z-10 flex w-[4.5rem] shrink-0 flex-col justify-center">
                       {isPenthouse ? (

@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { MIN_BID_PENCE } from "@/lib/types";
+import { isValidHttpUrl } from "@/lib/validation";
 
 export const runtime = "nodejs";
 
@@ -44,6 +45,7 @@ export async function POST(request: Request) {
     const displayName = metadata.display_name?.trim();
     const tagline = metadata.tagline?.trim() ?? "";
     const customColor = metadata.custom_color?.trim() || "#00ffff";
+    const targetUrl = metadata.target_url?.trim() ?? "";
     const bidAmountPence = Number.parseInt(
       metadata.bid_amount_pence ?? "",
       10
@@ -57,6 +59,14 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!targetUrl || !isValidHttpUrl(targetUrl)) {
+      console.error("[webhook] Invalid target_url", metadata);
+      return NextResponse.json(
+        { error: "Invalid target_url in session metadata" },
+        { status: 400 }
+      );
+    }
+
     if (bidAmountPence < MIN_BID_PENCE) {
       console.error("[webhook] Bid below minimum", bidAmountPence);
       return NextResponse.json({ error: "Bid too low" }, { status: 400 });
@@ -66,6 +76,7 @@ export async function POST(request: Request) {
       display_name: displayName,
       tagline,
       custom_color: customColor,
+      target_url: targetUrl,
       bid_amount_pence: bidAmountPence,
       avatar_url: "",
       stripe_session_id: session.id,

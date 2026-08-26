@@ -6,6 +6,7 @@ import {
   MIN_BID_PENCE,
   type Bid,
 } from "@/lib/types";
+import { isValidHttpUrl } from "@/lib/validation";
 
 type ClaimFloorModalProps = {
   open: boolean;
@@ -27,6 +28,7 @@ export function ClaimFloorModal({
 
   const [displayName, setDisplayName] = useState("");
   const [tagline, setTagline] = useState("");
+  const [targetUrl, setTargetUrl] = useState("");
   const [customColor, setCustomColor] = useState(DEFAULT_COLOR);
   const [bidAmountPence, setBidAmountPence] = useState(minBid);
   const [bidPoundsInput, setBidPoundsInput] = useState(
@@ -71,6 +73,12 @@ export function ClaimFloorModal({
       return;
     }
 
+    const trimmedUrl = targetUrl.trim();
+    if (!trimmedUrl || !isValidHttpUrl(trimmedUrl)) {
+      setError("Enter a valid website URL starting with https:// or http://");
+      return;
+    }
+
     if (bidAmountPence < minBid) {
       setError(
         `Bid must be at least ${formatGbpFromPence(minBid)} to challenge Floor 100.`
@@ -88,6 +96,7 @@ export function ClaimFloorModal({
           display_name: displayName.trim(),
           tagline: tagline.trim(),
           custom_color: customColor,
+          target_url: trimmedUrl,
           bid_amount_pence: bidAmountPence,
         }),
       });
@@ -179,6 +188,25 @@ export function ClaimFloorModal({
               placeholder="King of the skyline"
               className="w-full border border-white/15 bg-black/50 px-3 py-2.5 font-mono text-sm text-white outline-none transition focus:border-cyan-400 focus:shadow-[0_0_12px_rgba(0,240,255,0.25)]"
             />
+          </label>
+
+          <label className="block space-y-1.5">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
+              Website / Profile URL
+            </span>
+            <input
+              required
+              type="url"
+              inputMode="url"
+              maxLength={2048}
+              value={targetUrl}
+              onChange={(e) => setTargetUrl(e.target.value)}
+              placeholder="https://yoursite.com"
+              className="w-full border border-white/15 bg-black/50 px-3 py-2.5 font-mono text-sm text-white outline-none transition focus:border-cyan-400 focus:shadow-[0_0_12px_rgba(0,240,255,0.25)]"
+            />
+            <span className="block font-mono text-[10px] text-zinc-600">
+              Visitors can open this from your floor on the tower.
+            </span>
           </label>
 
           <label className="block space-y-1.5">

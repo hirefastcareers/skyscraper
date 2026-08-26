@@ -4,10 +4,20 @@ export type CheckoutPayload = {
   display_name: string;
   tagline: string;
   custom_color: string;
+  target_url: string;
   bid_amount_pence: number;
 };
 
 const HEX_COLOR = /^#[0-9A-Fa-f]{6}$/;
+
+export function isValidHttpUrl(value: string): boolean {
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
 
 export function validateCheckoutPayload(
   body: unknown
@@ -20,6 +30,7 @@ export function validateCheckoutPayload(
     display_name,
     tagline,
     custom_color,
+    target_url,
     bid_amount_pence,
   } = body as Record<string, unknown>;
 
@@ -41,6 +52,23 @@ export function validateCheckoutPayload(
 
   if (typeof custom_color !== "string" || !HEX_COLOR.test(custom_color)) {
     return { ok: false, error: "Custom colour must be a hex value like #00ffff" };
+  }
+
+  if (typeof target_url !== "string" || !target_url.trim()) {
+    return { ok: false, error: "Website URL is required" };
+  }
+
+  const trimmedUrl = target_url.trim();
+
+  if (trimmedUrl.length > 2048) {
+    return { ok: false, error: "Website URL is too long" };
+  }
+
+  if (!isValidHttpUrl(trimmedUrl)) {
+    return {
+      ok: false,
+      error: "Website URL must be a valid http:// or https:// link",
+    };
   }
 
   const amount =
@@ -67,6 +95,7 @@ export function validateCheckoutPayload(
       display_name: display_name.trim(),
       tagline: tagline.trim(),
       custom_color,
+      target_url: trimmedUrl,
       bid_amount_pence: amount,
     },
   };

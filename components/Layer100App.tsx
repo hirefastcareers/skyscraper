@@ -230,7 +230,7 @@ export function Layer100App() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12 lg:gap-8">
             {/* LEFT COLUMN: Headline & Stats */}
-            <div className="flex flex-col justify-start space-y-6 text-center lg:col-span-3 lg:sticky lg:top-28 lg:text-left">
+            <div className="space-y-4 self-start text-center lg:col-span-3 lg:sticky lg:top-28 lg:text-left">
               <div>
                 <p className="font-pixel text-[9px] uppercase tracking-[0.3em] text-cyan-400/70">
                   Hostile takeovers welcome
@@ -271,7 +271,7 @@ export function Layer100App() {
               </div>
 
               {/* Desktop stacked stats */}
-              <div className="hidden border border-cyan-400/25 bg-black/40 p-4 shadow-[0_0_30px_rgba(34,211,238,0.08)] lg:block">
+              <div className="hidden w-full border border-cyan-400/25 bg-black/40 p-4 shadow-[0_0_30px_rgba(34,211,238,0.08)] lg:block">
                 <p className="font-pixel text-[9px] uppercase tracking-widest text-cyan-400">
                   Live Stats
                 </p>
@@ -295,9 +295,9 @@ export function Layer100App() {
             </div>
 
             {/* CENTER COLUMN: Skyscraper */}
-            <div className="flex w-full flex-col items-center lg:col-span-6">
+            <div className="w-full self-start lg:col-span-6">
               {loading ? (
-                <div className="mx-auto flex h-64 w-full max-w-xl items-center justify-center border border-dashed border-white/15 bg-black/30 font-mono text-sm text-zinc-500">
+                <div className="flex h-64 w-full items-center justify-center border border-dashed border-white/15 bg-black/30 font-mono text-sm text-zinc-500">
                   Syncing tower state…
                 </div>
               ) : (
@@ -310,8 +310,8 @@ export function Layer100App() {
             </div>
 
             {/* RIGHT COLUMN: Protocol & CTA */}
-            <div className="flex flex-col justify-start space-y-6 lg:col-span-3 lg:sticky lg:top-28">
-              <div className="border border-white/10 bg-black/30 p-4">
+            <div className="space-y-4 self-start lg:col-span-3 lg:sticky lg:top-28">
+              <div className="w-full border border-white/10 bg-black/30 p-4">
                 <p className="font-pixel text-[9px] uppercase tracking-widest text-zinc-500">
                   System Protocol
                 </p>

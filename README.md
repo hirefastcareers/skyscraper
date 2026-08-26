@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Layer 100
 
-## Getting Started
+Gamified real-time pixel skyscraper. Users bid in GBP via Stripe; the highest bid owns Floor 100 (Penthouse). Lower floors reshuffle automatically.
 
-First, run the development server:
+## Stack
+
+- Next.js App Router + TypeScript (strict)
+- Tailwind CSS (neon glow animations)
+- Supabase (Postgres + Realtime)
+- Stripe Checkout + webhooks
+
+## Setup
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Create a Supabase project and run [`lib/schema.sql`](lib/schema.sql) in the SQL Editor.
+
+3. Copy env vars:
+
+```bash
+cp .env.example .env.local
+```
+
+Fill in Supabase URL/keys, Stripe secret + webhook secret, and `NEXT_PUBLIC_APP_URL`.
+
+4. Start the app:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Forward Stripe webhooks locally:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Paste the printed `whsec_...` into `.env.local` as `STRIPE_WEBHOOK_SECRET`.
 
-## Learn More
+## Mechanics
 
-To learn more about Next.js, take a look at the following resources:
+- Minimum bid: **£5.00** (`500` pence)
+- `floor_rank` is recalculated by a DB trigger: `bid_amount_pence DESC`, then `created_at ASC`
+- Highest bid → Floor 100; next → 99; … Floor 1
+- Bids beyond the top 100 fall off the tower (`floor_rank = NULL`)
+- Floors 91–100 are the Penthouse Zone (neon gold/cyan treatment)
+- Realtime channel `bids-change` refreshes the tower on insert/update/delete
+- Successful Stripe return (`/?status=success`) fires confetti
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## API
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Route | Method | Purpose |
+| --- | --- | --- |
+| `/api/checkout` | POST | Create Stripe Checkout session (GBP) |
+| `/api/webhooks/stripe` | POST | Fulfill `checkout.session.completed` → insert bid |
 
-## Deploy on Vercel
+Checkout body:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```json
+{
+  "display_name": "NEON_ACE",
+  "tagline": "King of the skyline",
+  "custom_color": "#00ffff",
+  "bid_amount_pence": 1500
+}
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# skyscraper
